@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Recipe Book </title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="fontAwesome/css/all.css">
+    </head>
+    <body class="body-recipes" onload = "getRecipe()">
+        <div class="header">
+            <a href="#" id="back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <img src="images/images/logo-text.png">
+        </div>
+
+        <div id="recipe">
+            <div class="recipe-details" id="output">
+
+            </div>   
+        </div>
+
+        <script>
+            var id = getId();
+            function getId() {
+                //Event that creats a URL object using current URL
+                var urlParams = new URLSearchParams(window.location.search);
+                // Get the 'id' parameter from the URL. Default to null if it doesn't exist
+                var id = urlParams.get('id') || null;
+                //Returns the ID to global variable
+                return id;
+            }
+
+            function getRecipe(){
+                //Element for URL
+                var rootPath = "https://mysite.itvarsity.org/api/recipe-book/";
+                //Event to display the Recipe by getting its ID
+                var fullPath = rootPath + "get-recipes/?id=" + id;
+                fetch (fullPath)
+                //Event that returns all the items in the json array
+                    .then(function(response){
+                        return response.json();
+                    })
+                //Event that takes all the data in the server and gives it as a display on the screen
+                    .then(function(data){
+                        //Event that allows it to go back to the other recipes when you click on the back arrow
+                        document.getElementById("back-link").href = "list-recipes.html?category=" + data[0].category;
+                    //Event for all of this data to be displayed in the output id in html
+                        var output = "";
+                        output += `
+                            <img src = "${rootPath}uploads/${data[0].image}" />
+                            <h1>${data[0].title}</h1>
+                            <div class= "recipe-details-ingredients">
+                                <h2>Ingredients</h2>
+                                <ul>
+                                    ${data[0].ingredients}
+                                </ul>
+                            </div>
+                            <div class= "recipe-details-steps">
+                                <h2>Method</h2>
+                                <ol>
+                                    ${data[0].method}
+                                </ol>
+                            </div>
+                        `;
+                        document.getElementById("output").innerHTML = output;
+                    })
+            }
+        </script>
+    </body>
+</html>

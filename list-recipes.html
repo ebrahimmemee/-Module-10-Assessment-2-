@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Recipe Book | Meals</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="fontAwesome/css/all.css">
+</head>
+<body class="body-meals" onload="getRecipeList()">
+
+    <header class="header">
+        <a href="index.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a>
+        <img src="images/images/logo-text.png" alt="My Recipe Book Logo">
+    </header>
+
+    <main id="meals">
+        <div class="meals-list">
+            <!-- Recipe items will be populated here -->
+        </div>
+    </main>
+
+    <script>
+        var category = getCategory();
+
+        function getRecipeList() {
+            var rootPath = "https://mysite.itvarsity.org/api/recipe-book/";
+            var fullPath = rootPath + "get-recipes/?category=" + (category || ''); // Ensure category is defined
+
+            fetch(fullPath)
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(function (data) {
+                    var output = "";
+                    for (var a = 0; a < data.length; a++) {
+                        output += `
+                            <a href="show-recipes.html?id= ${data[a].id}">
+                                <div class="meals-list-item">
+                                    <h1> ${data [a].title}<i class="fas fa-chevron-circle-right"></i></h1>
+                                    <p>${data [a].description}</p>
+                                </div>
+                            </a>
+                        `;
+                    }
+                    document.getElementById("meals").innerHTML = output;
+                })
+                .catch(function (error) {
+                    console.error('Fetch error:', error);
+                });
+        }
+        function getCategory() {
+            var url = window.location.href;
+            var pos = url.search("=");
+            var category = url.slice(pos + 1);
+
+            return category;
+        }
+    </script>
+
+</body>
+</html>
